@@ -1,9 +1,11 @@
 <template>
   <div class="carousel-view">
     <transition-group class="carousel" tag="div">
-      <div v-for="movie in nowplaying" class="slide" :key="movie.id">
+      <div v-for="movie in array" class="slide" :key="movie.id">
         <div class="container">
-          <router-link to="/details/:id">
+          <router-link
+            :to="{ name: 'MoviesDetails', params: { id: movie.id } }"
+          >
             <img
               :src="`https://image.tmdb.org/t/p/w500/${movie.backdrop_path}`"
             />
@@ -16,15 +18,6 @@
         </div>
       </div>
     </transition-group>
-
-    <div class="carousel-buttons">
-      <button @click="previous">
-        <i class="arrow left"></i>
-      </button>
-      <button @click="next">
-        <i class="arrow right"></i>
-      </button>
-    </div>
   </div>
 </template>
 
@@ -33,23 +26,29 @@ import { mapActions, mapGetters } from "vuex";
 
 export default {
   name: "NowPlaying",
+  data() {
+    return {
+      array: [],
+    };
+  },
 
   computed: {
     ...mapGetters("getMovies", ["nowplaying"]),
   },
   methods: {
     ...mapActions("getMovies", ["getNowPlaying"]),
-    next() {
-      const first = this.nowplaying.shift();
-      this.nowplaying = this.nowplaying.concat(first);
-    },
-    previous() {
-      const last = this.nowplaying.pop();
-      this.nowplaying = [last].concat(this.nowplaying);
-    },
   },
   created() {
     this.getNowPlaying();
+    setTimeout(() => {
+      this.array = this.nowplaying;
+    }, 500);
+  },
+  mounted() {
+    setInterval(() => {
+      const first = this.array.shift();
+      this.array = this.array.concat(first);
+    }, 2000);
   },
 };
 </script>
@@ -58,29 +57,27 @@ export default {
 .carousel-view {
   display: flex;
   flex-direction: column;
-  align-items: right;
+  align-items: center;
 }
 .carousel {
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  width: 100%;
   min-height: 25em;
 }
 img {
   border-radius: 10px;
-  width: 700px;
-  height: 300px;
+  box-shadow: 2px 2px 2px 2px #0286f3;
 }
 .slide {
   flex: 0 0 20em;
   height: 20em;
-  margin: 1em;
+  margin: -5px;
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 0.1em dashed #000;
   border-radius: 50%;
   transition: transform 0.3s ease-in-out;
 }
@@ -106,15 +103,7 @@ img {
   transform: rotate(135deg);
   -webkit-transform: rotate(135deg);
 }
-.carousel-buttons {
-  text-align: right;
-}
 
-button {
-  border: none;
-  margin: 10px;
-  background: transparent;
-}
 .container {
   position: relative;
   text-align: center;

@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import MainPage from '../views/MainPage.vue';
-import TheDetails from '../views/TheDetails.vue';
+import MoviesDetails from '../views/MoviesDetails.vue';
+import NotFound from '../components/NotFound.vue';
 
 const routes = [
   {
@@ -9,10 +10,12 @@ const routes = [
     component: MainPage,
   },
   {
-    path: '/details/:id',
-    name: 'Details',
-    component: TheDetails,
+    path: '/movie/:id',
+    name: 'MoviesDetails',
+    component: MoviesDetails,
+    props: true,
   },
+  { path: '/:notFound(.*)', name: 'NotFound', component: NotFound },
 ];
 
 const router = createRouter({

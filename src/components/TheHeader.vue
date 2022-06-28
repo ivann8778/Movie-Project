@@ -1,9 +1,9 @@
 <template>
   <header>
     <nav class="navbar navbar-expand-lg">
-      <a class="navbar-brand flex-grow-1">
+      <router-link class="navbar-brand flex-grow-1" to="/">
         <img :src="image" id="logo" />
-      </a>
+      </router-link>
       <div class="flex-grow-1 d-flex container-fluid">
         <form class="form-inline mx-0 mx-lg-auto rounded">
           <input
@@ -124,6 +124,10 @@ nav {
   opacity: 0.91;
   backdrop-filter: blur(11px);
   -webkit-backdrop-filter: blur(11px);
+  z-index: 99999;
+}
+input::placeholder {
+  color: #ffffff;
 }
 input[type="search"] {
   top: 19px;
@@ -134,9 +138,7 @@ input[type="search"] {
   border-radius: 30px;
   opacity: 0.3;
 }
-::placeholder {
-  color: white;
-}
+
 #logo {
   margin-left: 50px;
 }
@@ -149,5 +151,8 @@ input[type="search"] {
 }
 .dropdown {
   margin: 20px;
+}
+.dropdown-menu {
+  background: #ffffff51 0% 0% no-repeat padding-box;
 }
 </style>

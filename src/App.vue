@@ -25,5 +25,6 @@ export default {
 }
 body {
   overflow-x: hidden; /* Hide scrollbars */
+  background-color: #020916;
 }
 </style>
