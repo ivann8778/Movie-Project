@@ -47,9 +47,6 @@ export default {
       const last = this.nowplaying.pop();
       this.nowplaying = [last].concat(this.nowplaying);
     },
-    kur() {
-      console.log("kur");
-    },
   },
   created() {
     this.getNowPlaying();
