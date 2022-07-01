@@ -1,27 +1,24 @@
 <template>
+  <h2>Top Rated Movies</h2>
+  <div class="carousel-buttons">
+    <button @click="previous">
+      <i class="arrow left"></i>
+    </button>
+    <button @click="next">
+      <i class="arrow right"></i>
+    </button>
+  </div>
   <div class="carousel-view">
     <transition-group class="carousel" tag="div">
       <div v-for="movie in array" class="slide" :key="movie.id">
         <div class="container">
           <router-link
-            :to="{
-              name: 'MoviesDetails',
-              params: {
-                id: movie.id,
-                category: movie.category,
-                sort: movie.sort,
-              },
-            }"
+            :to="{ name: 'MoviesDetails', params: { id: movie.id } }"
           >
             <img
-              :src="`https://image.tmdb.org/t/p/w500/${movie.backdrop_path}`"
+              :src="`https://image.tmdb.org/t/p/w500/${movie.poster_path}`"
             />
           </router-link>
-          <div class="bottom-left">
-            <h2>{{ movie.title }}</h2>
-            <h5>Release date: {{ movie.release_date }}</h5>
-            <h5>Original language: {{ movie.original_language }}</h5>
-          </div>
         </div>
       </div>
     </transition-group>
@@ -32,7 +29,8 @@
 import { mapActions, mapGetters } from "vuex";
 
 export default {
-  name: "NowPlaying",
+  name: "MoviesCmp",
+  props: ["type"],
   data() {
     return {
       array: [],
@@ -40,26 +38,27 @@ export default {
   },
 
   computed: {
-    ...mapGetters("getMovies", ["nowplaying"]),
+    ...mapGetters("getMovies", ["movies"]),
   },
   methods: {
-    ...mapActions("getMovies", ["getNowPlaying"]),
-  },
-  created() {
-    this.getNowPlaying();
-    setTimeout(() => {
-      this.array = this.nowplaying;
-    }, 500);
-  },
-  mounted() {
-    setInterval(() => {
+    ...mapActions("getMovies", ["getMovies"]),
+    next() {
       const first = this.array.shift();
       this.array = this.array.concat(first);
-    }, 2000);
+    },
+    previous() {
+      const last = this.array.pop();
+      this.array = [last].concat(this.array);
+    },
+  },
+  created() {
+    this.getMovies();
+    setTimeout(() => {
+      this.array = this.movies;
+    }, 500);
   },
 };
 </script>
-
 <style scoped>
 .carousel-view {
   display: flex;
@@ -76,12 +75,12 @@ export default {
 }
 img {
   border-radius: 10px;
-  box-shadow: 2px 2px 2px 2px #0286f3;
+  width: 90%;
 }
 .slide {
-  flex: 0 0 20em;
-  height: 20em;
-  margin: -5px;
+  flex: 0 0 270px;
+  height: 270px;
+  margin: -20px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -110,20 +109,23 @@ img {
   transform: rotate(135deg);
   -webkit-transform: rotate(135deg);
 }
-
-.container {
-  position: relative;
-  text-align: center;
-  color: white;
+.carousel-buttons {
+  text-align: right;
+  margin-right: 50px;
 }
 
-/* Bottom left text */
-.bottom-left {
-  position: absolute;
-  bottom: 50px;
-  left: 16px;
-  color: #eeeeee;
+button {
+  border: none;
+  margin: 10px;
+  background: transparent;
+}
+
+h2 {
   text-align: left;
-  font: normal normal normal 26px/31px SF Pro Text;
+  font: normal normal 600 32px/38px SF Pro Display;
+  letter-spacing: 0px;
+  color: #ffffff;
+  opacity: 1;
+  margin-left: 50px;
 }
 </style>

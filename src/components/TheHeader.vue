@@ -98,7 +98,6 @@
     </nav>
   </header>
 </template>
-
 <script>
 import image from "../assets/logo-small.png";
 import avatar from "../assets/avatar.jpg";

@@ -3,20 +3,18 @@
     <div class="row">
       <div v-if="isFetched" class="col-sm">
         <img
-          id="backdrop_path"
-          :src="`https://image.tmdb.org/t/p/w500/${movieDetail.backdrop_path}`"
+          :src="`https://image.tmdb.org/t/p/w500/${serialDetail.backdrop_path}`"
         />
       </div>
-      <div v-if="isFetched" id="text" class="col-sm">
-        <h1 id="title">{{ movieDetail.original_title }}</h1>
-        <h3 id="genre" v-for="detail in movieDetail.genres" :key="detail.id">
-          | {{ detail.name }} |
+      <div v-if="isFetched" class="col-sm">
+        <h1>{{ serialDetail.original_name }}</h1>
+        <h3 id="genre" v-for="detail in serialDetail.genres" :key="detail.id">
+          | {{ detail.name }}|
         </h3>
-        <h3 id="description">{{ movieDetail.overview }}</h3>
+        <h3>{{ serialDetail.overview }}</h3>
       </div>
     </div>
   </div>
-  <the-tabs></the-tabs>
   <div class="carousel-view">
     <transition-group class="carousel" tag="div">
       <div v-for="credit in creditDetail" :key="credit.id">
@@ -39,14 +37,11 @@
 </template>
 
 <script>
-import TheTabs from "../components/TheTabs.vue";
-
 export default {
-  components: { TheTabs },
-  props: ["id", "category"],
+  props: ["id"],
   data() {
     return {
-      movieDetail: null,
+      serialDetail: null,
       creditDetail: null,
       similarDetail: null,
       isFetched: false,
@@ -55,36 +50,34 @@ export default {
     };
   },
   computed: {
-    movie() {
-      return this.$store.getters["getMovies/nowplayingmoviedetails"];
+    serial() {
+      return this.$store.getters["getSerials/serialdetails"];
     },
     credit() {
-      return this.$store.getters["getMovies/credits"].slice(0, 6);
+      return this.$store.getters["getSerials/credits"].slice(0, 6);
     },
     similar() {
-      return this.$store.getters["getMovies/similar"];
+      return this.$store.getters["getSerials/similar"];
     },
   },
   methods: {
-    async loadMovieDetails() {
-      await this.$store.dispatch("getMovies/getNowPlayingMovieDetails", {
+    async loadSerialDetails() {
+      await this.$store.dispatch("getSerials/getSerialDetails", {
         id: this.id,
-        category: this.category,
       });
-      this.movieDetail = this.movie;
+      this.serialDetail = this.serial;
       this.isFetched = true;
-      //console.log(this.movieDetail);
     },
     async loadCredits() {
-      await this.$store.dispatch("getMovies/getCredits", {
+      await this.$store.dispatch("getSerials/getCredits", {
         id: this.id,
       });
       this.creditDetail = this.credit;
       this.isFetched = true;
       //console.log(this.creditDetail);
     },
-    async loadSimilarMovie() {
-      await this.$store.dispatch("getMovies/getSimilarMovie", {
+    async loadSimilarSerial() {
+      await this.$store.dispatch("getSerials/getSemilarSerial", {
         id: this.id,
       });
       this.similarDetail = this.similar;
@@ -93,9 +86,9 @@ export default {
     },
   },
   created() {
-    this.loadMovieDetails();
+    this.loadSerialDetails();
     this.loadCredits();
-    this.loadSimilarMovie();
+    this.loadSimilarSerial();
   },
 };
 </script>
@@ -134,41 +127,21 @@ export default {
   width: 75%;
   max-width: 300px;
 }
-#backdrop_path {
-  border-radius: 10px;
-  width: 330px;
-  height: 450px;
+.container {
+  margin-top: 30px;
+  color: #eeeeee;
+  font: normal normal 300 25px/30px SF Pro Text;
+  letter-spacing: 0.1px;
 }
-.slide {
-  flex: 0 0 270px;
-  height: 270px;
-  margin: -20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 50%;
-  transition: transform 0.3s ease-in-out;
+.col-sm {
+  margin: 50px;
 }
-.slide:first-of-type {
-  opacity: 0;
-}
-.slide:last-of-type {
-  opacity: 0;
+
+img {
+  border-radius: 6px;
+  width: 100%;
 }
 #genre {
   display: inline;
-  font: normal normal medium 44px/53px SF Pro Display;
-  letter-spacing: 0.18px;
-  color: #eeeeee;
-}
-#title {
-  font: normal normal 600 58px/70px SF Pro Display;
-  letter-spacing: 0.23px;
-  color: #eeeeee;
-}
-#description {
-  font: normal normal 300 25px/30px SF Pro Text;
-  letter-spacing: 0.1px;
-  color: #eeeeee;
 }
 </style>

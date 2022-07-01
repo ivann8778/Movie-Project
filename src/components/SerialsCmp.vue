@@ -12,7 +12,16 @@
     <transition-group class="carousel" tag="div">
       <div v-for="movie in array" class="slide" :key="movie.id">
         <div class="container">
-          <router-link to="/details/:id">
+          <router-link
+            :to="{
+              name: 'SerialsDetails',
+              params: {
+                id: movie.id,
+                category: movie.category,
+                sort: movie.sort,
+              },
+            }"
+          >
             <img
               :src="`https://image.tmdb.org/t/p/w500/${movie.poster_path}`"
             />
