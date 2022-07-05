@@ -5,20 +5,12 @@ export default {
     credits: [],
     similar: [],
     reviews: [],
+    videos: [],
   },
 
   mutations: {
-    SET_DETAILS(state, payload) {
-      state.details = payload;
-    },
-    SET_CREDITS(state, payload) {
-      state.credits = payload;
-    },
-    SET_SIMILAR(state, payload) {
-      state.similar = payload;
-    },
-    SET_REVIEWS(state, payload) {
-      state.reviews = payload;
+    SET_DATA(state, payload) {
+      state[payload.key] = payload.data;
     },
   },
   actions: {
@@ -33,8 +25,11 @@ export default {
       } else if (payload.category === 'tv') {
         resData.category = 'tv';
       }
-      context.commit('SET_DETAILS', resData);
-      //   console.log('details', resData.results);
+      context.commit('SET_DATA', {
+        key: 'details',
+        data: resData,
+      });
+      //console.log('details', resData);
     },
     async getCredits(context, payload) {
       const response = await fetch(
@@ -47,7 +42,10 @@ export default {
       } else if (payload.category === 'tv') {
         resData.category = 'tv';
       }
-      context.commit('SET_CREDITS', resData.cast);
+      context.commit('SET_DATA', {
+        key: 'credits',
+        data: resData.cast,
+      });
       //console.log(resData.cast);
     },
     async getSimilar(context, payload) {
@@ -61,7 +59,10 @@ export default {
       } else if (payload.category === 'tv') {
         resData.category = 'tv';
       }
-      context.commit('SET_SIMILAR', resData.results);
+      context.commit('SET_DATA', {
+        key: 'similar',
+        data: resData.results,
+      });
       //console.log('asdasd', resData.results);
     },
     async getReviews(context, payload) {
@@ -75,8 +76,28 @@ export default {
       } else if (payload.category === 'tv') {
         resData.category = 'tv';
       }
-      context.commit('SET_REVIEWS', resData.results);
-      console.log('asdasd', resData.results);
+      context.commit('SET_DATA', {
+        key: 'reviews',
+        data: resData.results,
+      });
+      //console.log(resData.results);
+    },
+    async getVideos(context, payload) {
+      const response = await fetch(
+        `https://api.themoviedb.org/3/${payload.category}/${payload.id}/videos?api_key=7074bb722049de6c4c14dd7d06db2407&language=en-US`
+      );
+      if (!response.ok) throw Error;
+      const resData = await response.json();
+      if (payload.category === 'movie') {
+        resData.category = 'movie';
+      } else if (payload.category === 'tv') {
+        resData.category = 'tv';
+      }
+      context.commit('SET_DATA', {
+        key: 'videos',
+        data: resData.results,
+      });
+      //console.log(resData.results);
     },
   },
 
@@ -92,6 +113,9 @@ export default {
     },
     reviews(state) {
       return state.reviews;
+    },
+    videos(state) {
+      return state.videos;
     },
   },
 };

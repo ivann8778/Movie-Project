@@ -1,8 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import MainPage from '../views/MainPage.vue';
-// import MoviesDetails from '../views/MoviesDetails.vue';
-// import SerialsDetails from '../views/SerialsDetails.vue';
 import TheDetails from '../views/TheDetails.vue';
+import SearchList from '../components/SearchList.vue';
 import NotFound from '../components/NotFound.vue';
 
 const routes = [
@@ -12,15 +11,21 @@ const routes = [
     component: MainPage,
   },
   {
-    path: '/movie/:id/:category',
+    path: '/movie/:id/',
     name: 'MoviesDetails',
     component: TheDetails,
     props: true,
   },
   {
-    path: '/tv/:id/:category',
+    path: '/tv/:id/',
     name: 'SerialsDetails',
     component: TheDetails,
+    props: true,
+  },
+  {
+    path: '/search/:input/',
+    name: 'Search',
+    component: SearchList,
     props: true,
   },
   { path: '/:notFound(.*)', name: 'NotFound', component: NotFound },

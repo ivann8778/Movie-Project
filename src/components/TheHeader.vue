@@ -5,12 +5,16 @@
         <img :src="image" id="logo" />
       </router-link>
       <div class="flex-grow-1 d-flex container-fluid">
-        <form class="form-inline mx-0 mx-lg-auto rounded">
+        <form
+          @submit.prevent="searchInput"
+          class="form-inline mx-0 mx-lg-auto rounded"
+        >
           <input
             class="form-control mr-sm-2"
             type="search"
             placeholder="Search for a movie/serial ..."
             aria-label="Search"
+            v-model="input"
           />
           <i style="margin: -60px" class="fa-solid fa-magnifying-glass"></i>
         </form>
@@ -108,7 +112,13 @@ export default {
     return {
       image,
       avatar,
+      input: "",
     };
+  },
+  methods: {
+    searchInput() {
+      this.$router.push({ name: "Search", params: { input: this.input } });
+    },
   },
 };
 </script>

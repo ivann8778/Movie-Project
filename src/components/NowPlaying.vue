@@ -9,7 +9,6 @@
               params: {
                 id: movie.id,
                 category: movie.category,
-                sort: movie.sort,
               },
             }"
           >

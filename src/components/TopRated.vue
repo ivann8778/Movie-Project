@@ -1,5 +1,5 @@
 <template>
-  <h2>Top Rated Movies</h2>
+  <h2>Top Rated</h2>
   <div class="carousel-buttons">
     <button @click="previous">
       <i class="arrow left"></i>
@@ -10,52 +10,60 @@
   </div>
   <div class="carousel-view">
     <transition-group class="carousel" tag="div">
-      <div v-for="movie in array" class="slide" :key="movie.id">
+      <div v-for="data in arrayWithData" class="slide" :key="data.id">
         <div class="container">
           <router-link
-            :to="{ name: 'MoviesDetails', params: { id: movie.id } }"
+            :to="{
+              name:
+                data.category === 'movies' ? 'MoviesDetails' : 'SerialsDetails',
+              params: {
+                id: data.id,
+                category: data.category,
+              },
+            }"
           >
-            <img
-              :src="`https://image.tmdb.org/t/p/w500/${movie.poster_path}`"
-            />
+            <img :src="`https://image.tmdb.org/t/p/w500/${data.poster_path}`" />
           </router-link>
         </div>
       </div>
     </transition-group>
   </div>
 </template>
-
 <script>
-import { mapActions, mapGetters } from "vuex";
-
 export default {
-  name: "MoviesCmp",
-  props: ["type"],
+  name: "TopRated",
+  props: ["category", "getters", "actions"],
   data() {
     return {
-      array: [],
+      arrayWithData: [],
+      isFetched: false,
     };
   },
-
   computed: {
-    ...mapGetters("getMovies", ["movies"]),
+    data() {
+      return this.$store.getters[`${this.getters}`];
+    },
   },
   methods: {
-    ...mapActions("getMovies", ["getMovies"]),
+    async loadData() {
+      await this.$store.dispatch(`${this.actions}`, {
+        id: this.id,
+        category: this.category,
+      });
+      this.arrayWithData = this.data;
+      this.isFetched = true;
+    },
     next() {
-      const first = this.array.shift();
-      this.array = this.array.concat(first);
+      const first = this.arrayWithData.shift();
+      this.arrayWithData = this.arrayWithData.concat(first);
     },
     previous() {
-      const last = this.array.pop();
-      this.array = [last].concat(this.array);
+      const last = this.arrayWithData.pop();
+      this.arrayWithData = [last].concat(this.arrayWithData);
     },
   },
   created() {
-    this.getMovies();
-    setTimeout(() => {
-      this.array = this.movies;
-    }, 500);
+    this.loadData();
   },
 };
 </script>

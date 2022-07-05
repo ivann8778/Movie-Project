@@ -2,13 +2,13 @@
   <div id="details">
     <div class="container">
       <div class="row">
-        <div id="backdrop_path" v-if="isFetched" class="col-sm">
+        <div id="backdrop_path" v-if="movieDetail" class="col-sm">
           <img
             id="mainImg"
-            :src="`https://image.tmdb.org/t/p/w500/${movieDetail.backdrop_path}`"
+            :src="`https://image.tmdb.org/t/p/w500/${movieDetail.poster_path}`"
           />
         </div>
-        <div v-if="isFetched" id="text" class="col-sm">
+        <div v-if="movieDetail" id="text" class="col-sm">
           <h1 id="title">
             {{
               movieDetail.original_title
@@ -24,7 +24,7 @@
       </div>
     </div>
   </div>
-  <the-tabs></the-tabs>
+  <TheTabs />
   <hr />
   <div id="carouselViewCast" class="carousel-view">
     <transition-group class="carousel" tag="div">
@@ -42,29 +42,54 @@
         <p>{{ credit.character }}</p>
       </div>
     </transition-group>
+    <hr />
   </div>
-  <hr />
+
   <div id="reviews" class="row">
-    <div v-for="reviews in reviewsDetail" :key="reviews.id" class="col">
+    <div
+      id="review"
+      v-for="reviews in reviewsDetail"
+      :key="reviews.id"
+      class="col"
+    >
       <img
         v-if="reviewsDetail.length > 0"
         id="avatar"
         :src="
-          reviews.author_details.avatar_path
+          reviews.author_details.avatar_path > 25
             ? 'https://image.tmdb.org/t/p/w500/' +
               reviews.author_details.avatar_path
             : this.noImg
         "
       />
+      <StarRating
+        id="starrating"
+        v-model:rating="reviews.author_details.rating"
+        :readOnly="true"
+      />
       <h1>{{ reviews.author }}</h1>
-      <p>{{ reviews.content }}</p>
+      <p>{{ reviews.content.substr(0, 300) }}</p>
     </div>
   </div>
   <hr />
-  <div id="videos">
-    <h1>Videos</h1>
-    <hr />
+  <div class="carousel-buttons">
+    <button @click="previous">
+      <i class="arrow left"></i>
+    </button>
+    <button @click="next">
+      <i class="arrow right"></i>
+    </button>
   </div>
+  <div id="video" class="carousel-view">
+    <transition-group class="carousel" tag="div">
+      <div v-for="video in videoDetail" class="slide" :key="video.id">
+        <div class="container">
+          <iframe v-if="videoDetail.length > 0" :src="url + video.key"></iframe>
+        </div>
+      </div>
+    </transition-group>
+  </div>
+  <hr />
   <h2>Similar productions to watch</h2>
   <div id="carouselViewSimilar" class="carousel-view">
     <transition-group class="carousel" tag="div">
@@ -73,12 +98,12 @@
           v-if="similarDetail.length > 0"
           id="similarImg"
           :src="
-            similar.backdrop_path
-              ? 'https://image.tmdb.org/t/p/w500/' + similar.backdrop_path
+            similar.poster_path
+              ? 'https://image.tmdb.org/t/p/w500/' + similar.poster_path
               : this.noImg
           "
         />
-        <h3 v-else>The are no similar productions for this movie/serial</h3>
+        <h2 v-else>Sorry but there are no similar productions.</h2>
       </div>
     </transition-group>
   </div>
@@ -89,9 +114,10 @@
 
 <script>
 import TheTabs from "../components/TheTabs.vue";
+import StarRating from "vue-star-rating";
 
 export default {
-  components: { TheTabs },
+  components: { TheTabs, StarRating },
   props: ["id", "category"],
   data() {
     return {
@@ -99,9 +125,11 @@ export default {
       creditDetail: null,
       similarDetail: null,
       reviewsDetail: null,
+      videoDetail: null,
       isFetched: false,
       noImg:
         "https://icon-library.com/images/no-photo-available-icon/no-photo-available-icon-20.jpg",
+      url: "https://www.youtube.com/embed/",
     };
   },
   computed: {
@@ -116,6 +144,9 @@ export default {
     },
     reviews() {
       return this.$store.getters["getDetails/reviews"].slice(0, 2);
+    },
+    videos() {
+      return this.$store.getters["getDetails/videos"];
     },
   },
   methods: {
@@ -153,7 +184,25 @@ export default {
       });
       this.reviewsDetail = this.reviews;
       this.isFetched = true;
-      //console.log(this.similarDetail);
+      //console.log(this.reviewsDetail);
+    },
+    async loadVideos() {
+      await this.$store.dispatch("getDetails/getVideos", {
+        id: this.id,
+        category: this.category,
+      });
+      this.videoDetail = this.videos;
+      this.isFetched = true;
+      //console.log(this.reviewsDetail);
+    },
+
+    next() {
+      const first = this.videoDetail.shift();
+      this.videoDetail = this.videoDetail.concat(first);
+    },
+    previous() {
+      const last = this.videoDetail.pop();
+      this.videoDetail = [last].concat(this.videoDetail);
     },
   },
   created() {
@@ -161,6 +210,7 @@ export default {
     this.loadCredits();
     this.loadSimilar();
     this.loadReviews();
+    this.loadVideos();
   },
 };
 </script>
@@ -183,7 +233,7 @@ export default {
 }
 
 #credit {
-  height: 400px;
+  height: 450px;
   border-radius: 10px;
   margin-right: 15px;
   margin-left: 15px;
@@ -199,27 +249,25 @@ export default {
 }
 
 #profile_path {
-  border-radius: 10px 10px 0 0;
-  width: 75%;
-  max-width: 300px;
-  min-height: 10px;
+  border-radius: 10px;
+  width: 80%;
+  padding: -10px;
 }
 #mainImg {
+  max-width: 300px;
   border-radius: 10px;
-  width: 100%;
-  padding: 9px;
+  margin: 10px 0;
 }
 #similar {
-  border-radius: 10px;
-  margin-right: -15px;
-  margin-left: -15px;
-  margin-bottom: 30px;
+  margin: auto;
 }
 #similarImg {
   border-radius: 10px;
-  width: 75%;
   max-width: 300px;
-  min-height: 300px;
+  margin: 7px;
+}
+#starrating {
+  justify-content: space-around;
 }
 #avatar {
   border-radius: 50%;
@@ -244,6 +292,17 @@ export default {
 }
 #reviews {
   margin: 50px;
+  color: white;
+}
+#review {
+  border-left: 1px solid #151f2e;
+  border-right: 1px solid #151f2e;
+}
+iframe {
+  width: 100%;
+  height: 250px;
+  margin-left: -10px;
+  margin-right: 10px;
 }
 hr {
   border-top: 1px solid rgb(101, 116, 253);
@@ -266,5 +325,25 @@ button {
   border: none;
   margin: 10px;
   background: transparent;
+}
+.arrow {
+  border: solid rgb(255, 255, 255);
+  border-width: 0 1px 1px 0;
+  display: inline-block;
+  padding: 3px;
+}
+
+.right {
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+}
+
+.left {
+  transform: rotate(135deg);
+  -webkit-transform: rotate(135deg);
+}
+.carousel-buttons {
+  text-align: right;
+  margin-right: 50px;
 }
 </style>
