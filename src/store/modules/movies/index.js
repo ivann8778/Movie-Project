@@ -14,29 +14,37 @@ export default {
     },
   },
   actions: {
-    async getMovies(context) {
-      const response = await fetch(
-        'https://api.themoviedb.org/3/movie/top_rated?api_key=7074bb722049de6c4c14dd7d06db2407&page=1'
-      );
-      if (!response.ok) throw Error;
-      const resData = await response.json();
-      for (const movie of resData.results) {
-        movie.category = 'movie';
+    async getMovies(context, payload) {
+      try {
+        const response = await fetch(
+          `https://api.themoviedb.org/3/movie/top_rated?api_key=7074bb722049de6c4c14dd7d06db2407&page=${payload.page}`
+        );
+        if (!response.ok) throw Error;
+        const resData = await response.json();
+        for (const movie of resData.results) {
+          movie.category = 'movie';
+        }
+        context.commit('SET_MOVIES', resData.results);
+        //console.log(resData.results);
+      } catch (error) {
+        console.log(error);
       }
-      context.commit('SET_MOVIES', resData.results);
-      //console.log(resData.results);
     },
     async getNowPlaying(context) {
-      const response = await fetch(
-        'https://api.themoviedb.org/3/movie/now_playing?api_key=7074bb722049de6c4c14dd7d06db2407&page=1'
-      );
-      if (!response.ok) throw Error;
-      const resData = await response.json();
-      for (const movie of resData.results) {
-        movie.category = 'movie';
+      try {
+        const response = await fetch(
+          'https://api.themoviedb.org/3/movie/now_playing?api_key=7074bb722049de6c4c14dd7d06db2407&page=1'
+        );
+        if (!response.ok) throw Error;
+        const resData = await response.json();
+        for (const movie of resData.results) {
+          movie.category = 'movie';
+        }
+        context.commit('SET_NOWPLAYING', resData.results);
+        //console.log(resData.results);
+      } catch (error) {
+        console.log(error);
       }
-      context.commit('SET_NOWPLAYING', resData.results);
-      //console.log(resData.results);
     },
   },
 

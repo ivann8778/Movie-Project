@@ -1,15 +1,7 @@
 <template>
   <NowPlaying />
-  <TopRated
-    category="movies"
-    getters="getMovies/movies"
-    actions="getMovies/getMovies"
-  />
-  <TopRated
-    category="serials"
-    getters="getSerials/serials"
-    actions="getSerials/getSerials"
-  />
+  <TopRated category="movies" />
+  <TopRated category="serials" />
 </template>
 
 <script>

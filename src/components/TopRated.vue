@@ -1,5 +1,6 @@
 <template>
-  <h2>Top Rated</h2>
+  <h2 v-if="category === 'movies'">Top Rated Movies</h2>
+  <h2 v-else>Top Rated Series</h2>
   <div class="carousel-buttons">
     <button @click="previous">
       <i class="arrow left"></i>
@@ -22,7 +23,7 @@
               },
             }"
           >
-            <img :src="`https://image.tmdb.org/t/p/w500/${data.poster_path}`" />
+            <img :src="`${image}${data.poster_path}`" />
           </router-link>
         </div>
       </div>
@@ -32,34 +33,55 @@
 <script>
 export default {
   name: "TopRated",
-  props: ["category", "getters", "actions"],
+  props: {
+    category: {
+      type: String,
+      required: true,
+    },
+  },
   data() {
     return {
       arrayWithData: [],
       isFetched: false,
+      page: 1,
+      startPage: 1,
+      image: "https://image.tmdb.org/t/p/w500/",
     };
+  },
+  watch: {
+    page(newPage) {
+      this.loadData(newPage);
+    },
   },
   computed: {
     data() {
-      return this.$store.getters[`${this.getters}`];
+      return this.category === "movies" ? "movies/movies" : "serials/serials";
+    },
+    getGetters() {
+      return this.$store.getters[this.data];
     },
   },
   methods: {
-    async loadData() {
-      await this.$store.dispatch(`${this.actions}`, {
-        id: this.id,
-        category: this.category,
+    async loadData(page = this.page) {
+      const action =
+        this.category === "movies" ? "movies/getMovies" : "serials/getSerials";
+      await this.$store.dispatch(action, {
+        page: page,
       });
-      this.arrayWithData = this.data;
+      this.arrayWithData = this.getGetters;
       this.isFetched = true;
     },
     next() {
-      const first = this.arrayWithData.shift();
-      this.arrayWithData = this.arrayWithData.concat(first);
+      if (this.page > 7) {
+        return;
+      }
+      this.page++;
     },
     previous() {
-      const last = this.arrayWithData.pop();
-      this.arrayWithData = [last].concat(this.arrayWithData);
+      if (this.page <= this.startPage) {
+        return;
+      }
+      this.page--;
     },
   },
   created() {

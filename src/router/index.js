@@ -11,13 +11,13 @@ const routes = [
     component: MainPage,
   },
   {
-    path: '/movie/:id/',
+    path: '/:category/:id',
     name: 'MoviesDetails',
     component: TheDetails,
     props: true,
   },
   {
-    path: '/tv/:id/',
+    path: '/:category/:id',
     name: 'SerialsDetails',
     component: TheDetails,
     props: true,

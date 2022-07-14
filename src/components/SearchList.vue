@@ -13,28 +13,44 @@
         }"
       >
         <h3>{{ data.title ? data.title : noTitle }}</h3>
-        <img :src="data.poster_path ? imgPath + data.poster_path : noImg" />
+        <img :src="data.poster_path ? image + data.poster_path : noImg" />
       </router-link>
     </div>
   </div>
+  <ThePagination />
 </template>
 
 <script>
+import ThePagination from "./ThePagination.vue";
+
 export default {
-  props: ["input"],
+  components: { ThePagination },
+  props: {
+    input: {
+      type: String,
+      required: true,
+    },
+  },
   data() {
     return {
       searchData: [],
-      imgPath: "https://image.tmdb.org/t/p/w500/",
+      image: "https://image.tmdb.org/t/p/w500/",
       noImg:
         "https://icon-library.com/images/no-photo-available-icon/no-photo-available-icon-20.jpg",
       noTitle: "Missing Title",
+      page: 1,
+      startPage: 1,
     };
   },
+  watch: {
+    page(newPage) {
+      this.loadSearch(newPage);
+    },
+  },
   methods: {
-    async loadSearch() {
+    async loadSearch(page = this.pageNumber) {
       const response = await fetch(
-        `https://api.themoviedb.org/3/search/multi?api_key=7074bb722049de6c4c14dd7d06db2407&language=en-US&query=${this.input}`
+        `https://api.themoviedb.org/3/search/multi?api_key=7074bb722049de6c4c14dd7d06db2407&language=en-US&query=${this.input}&page=${page}`
       );
       if (!response.ok) throw Error;
       const resData = await response.json();
@@ -45,9 +61,9 @@ export default {
   created() {
     this.loadSearch();
   },
-  updated() {
-    this.loadSearch();
-  },
+  // updated() {
+  //   this.loadSearch();
+  // },
 };
 </script>
 

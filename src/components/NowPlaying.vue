@@ -12,9 +12,7 @@
               },
             }"
           >
-            <img
-              :src="`https://image.tmdb.org/t/p/w500/${movie.backdrop_path}`"
-            />
+            <img :src="`${image}${movie.backdrop_path}`" />
           </router-link>
           <div class="bottom-left">
             <h2>{{ movie.title }}</h2>
@@ -35,14 +33,15 @@ export default {
   data() {
     return {
       array: [],
+      image: "https://image.tmdb.org/t/p/w500/",
     };
   },
 
   computed: {
-    ...mapGetters("getMovies", ["nowplaying"]),
+    ...mapGetters("movies", ["nowplaying"]),
   },
   methods: {
-    ...mapActions("getMovies", ["getNowPlaying"]),
+    ...mapActions("movies", ["getNowPlaying"]),
   },
   created() {
     this.getNowPlaying();
