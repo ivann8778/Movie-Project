@@ -75,6 +75,7 @@
     </div>
     <h2 v-else>There are no reviews for this production.</h2>
   </the-tab>
+
   <the-tab :isSelected="selected === 'Images'">
     <div id="details">
       <div class="container">

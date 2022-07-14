@@ -1,6 +1,6 @@
 <template>
   <div class="container-data">
-    <div class="item-data" v-for="data in searchData" :key="data.id">
+    <div class="item-data" v-for="data in searchData.results" :key="data.id">
       <router-link
         :class="{ disabled: data.media_type === 'person' }"
         :to="{
@@ -17,7 +17,12 @@
       </router-link>
     </div>
   </div>
-  <ThePagination />
+  <ThePagination
+    :totalPages="searchData.total_pages"
+    :perPage="searchData.results.length"
+    :currentPage="currentPage"
+    @pagechanged="onPageChange"
+  />
 </template>
 
 <script>
@@ -39,31 +44,33 @@ export default {
         "https://icon-library.com/images/no-photo-available-icon/no-photo-available-icon-20.jpg",
       noTitle: "Missing Title",
       page: 1,
-      startPage: 1,
+      currentPage: 1,
     };
   },
   watch: {
-    page(newPage) {
-      this.loadSearch(newPage);
+    input(value) {
+      this.loadSearch(value);
     },
   },
   methods: {
-    async loadSearch(page = this.pageNumber) {
+    async loadSearch(page = this.currentPage) {
       const response = await fetch(
         `https://api.themoviedb.org/3/search/multi?api_key=7074bb722049de6c4c14dd7d06db2407&language=en-US&query=${this.input}&page=${page}`
       );
       if (!response.ok) throw Error;
       const resData = await response.json();
-      this.searchData = resData.results;
+      this.searchData = resData;
       //console.log(resData.results);
+    },
+    onPageChange(page) {
+      this.currentPage = page;
+      //console.log($event, this.currentPage);
+      this.loadSearch(this.currentPage);
     },
   },
   created() {
     this.loadSearch();
   },
-  // updated() {
-  //   this.loadSearch();
-  // },
 };
 </script>
 
