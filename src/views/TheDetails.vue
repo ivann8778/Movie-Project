@@ -107,7 +107,7 @@
       <transition-group v-if="images" class="carousel" tag="div">
         <div
           id="similar"
-          v-for="image in images.posters"
+          v-for="image in images.posters.slice(0, 6)"
           :key="image.file_path"
         >
           <img
@@ -311,7 +311,7 @@ export default {
       return this.$store.getters["details/credits"].slice(0, 6);
     },
     similars() {
-      return this.$store.getters["details/similar"].slice(0, 4);
+      return this.$store.getters["details/similar"].slice(0, 6);
     },
     reviews() {
       return this.$store.getters["details/reviews"].slice(0, 2);
@@ -370,10 +370,9 @@ export default {
   font: normal normal 300 25px/30px SF Pro Text;
   letter-spacing: 0.1px;
 }
-
 #profile_path {
   border-radius: 10px;
-  width: 80%;
+  width: 90%;
   padding: -10px;
 }
 #mainImg {
@@ -386,7 +385,7 @@ export default {
 }
 #similarImg {
   border-radius: 10px;
-  max-width: 300px;
+  max-width: 90%;
   margin: 7px;
 }
 #starrating {
