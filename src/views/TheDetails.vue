@@ -3,11 +3,12 @@
     <div id="details">
       <div class="container">
         <div class="row">
-          <div id="backdrop_path" v-if="movie" class="col-sm">
-            <img
-              id="mainImg"
-              :src="`https://image.tmdb.org/t/p/w500/${movie.poster_path}`"
-            />
+          <div
+            id="backdrop_path"
+            v-if="movie && Object.keys(movie).length > 0"
+            class="col-sm"
+          >
+            <img id="mainImg" :src="`${image}${movie.poster_path}`" />
           </div>
           <div v-if="movie" id="text" class="col-sm">
             <h1 id="title">
@@ -41,9 +42,7 @@
           <img
             id="profile_path"
             :src="
-              credit.profile_path
-                ? 'https://image.tmdb.org/t/p/w500/' + credit.profile_path
-                : this.noImg
+              credit.profile_path ? image + credit.profile_path : this.noImg
             "
           />
           <h3>{{ credit.name }}</h3>
@@ -59,8 +58,7 @@
           id="avatar"
           :src="
             review.author_details.avatar_path > 25
-              ? 'https://image.tmdb.org/t/p/w500/' +
-                review.author_details.avatar_path
+              ? image + review.author_details.avatar_path
               : this.noImg
           "
         />
@@ -81,10 +79,7 @@
       <div class="container">
         <div class="row">
           <div id="backdrop_path" v-if="movie" class="col-sm">
-            <img
-              id="mainImg"
-              :src="`https://image.tmdb.org/t/p/w500/${movie.poster_path}`"
-            />
+            <img id="mainImg" :src="`${image}${movie.poster_path}`" />
           </div>
           <div v-if="movie" id="text" class="col-sm">
             <h1 id="title">
@@ -109,12 +104,12 @@
       @selected="setSelected"
     ></the-tabs>
     <div id="carouselViewSimilar" class="carousel-view">
-      <transition-group
-        v-if="images.length > 0 && images"
-        class="carousel"
-        tag="div"
-      >
-        <div id="similar" v-for="image in images" :key="image.id">
+      <transition-group v-if="images" class="carousel" tag="div">
+        <div
+          id="similar"
+          v-for="image in images.posters"
+          :key="image.file_path"
+        >
           <img
             id="similarImg"
             :src="
@@ -134,8 +129,7 @@
           id="avatar"
           :src="
             review.author_details.avatar_path > 25
-              ? 'https://image.tmdb.org/t/p/w500/' +
-                review.author_details.avatar_path
+              ? image + review.author_details.avatar_path
               : this.noImg
           "
         />
@@ -155,10 +149,7 @@
       <div class="container">
         <div class="row">
           <div id="backdrop_path" v-if="movie" class="col-sm">
-            <img
-              id="mainImg"
-              :src="`https://image.tmdb.org/t/p/w500/${movie.poster_path}`"
-            />
+            <img id="mainImg" :src="`${image}${movie.poster_path}`" />
           </div>
           <div v-if="movie" id="text" class="col-sm">
             <h1 id="title">
@@ -182,14 +173,6 @@
       :selected="selected"
       @selected="setSelected"
     ></the-tabs>
-    <div class="carousel-buttons">
-      <button @click="previous">
-        <i class="arrow left"></i>
-      </button>
-      <button @click="next">
-        <i class="arrow right"></i>
-      </button>
-    </div>
     <div id="video" class="carousel-view">
       <transition-group class="carousel" tag="div">
         <div v-for="video in videos" class="slide" :key="video.id">
@@ -209,8 +192,7 @@
           id="avatar"
           :src="
             review.author_details.avatar_path > 25
-              ? 'https://image.tmdb.org/t/p/w500/' +
-                review.author_details.avatar_path
+              ? image + review.author_details.avatar_path
               : this.noImg
           "
         />
@@ -230,10 +212,7 @@
       <div class="container">
         <div class="row">
           <div id="backdrop_path" v-if="movie" class="col-sm">
-            <img
-              id="mainImg"
-              :src="`https://image.tmdb.org/t/p/w500/${movie.poster_path}`"
-            />
+            <img id="mainImg" :src="`${image}${movie.poster_path}`" />
           </div>
           <div v-if="movie" id="text" class="col-sm">
             <h1 id="title">
@@ -267,9 +246,7 @@
           <img
             id="similarImg"
             :src="
-              similar.poster_path
-                ? 'https://image.tmdb.org/t/p/w500/' + similar.poster_path
-                : this.noImg
+              similar.poster_path ? image + similar.poster_path : this.noImg
             "
           />
         </div>
@@ -283,8 +260,7 @@
           id="avatar"
           :src="
             review.author_details.avatar_path > 25
-              ? 'https://image.tmdb.org/t/p/w500/' +
-                review.author_details.avatar_path
+              ? image + review.author_details.avatar_path
               : this.noImg
           "
         />
@@ -308,15 +284,23 @@ import StarRating from "vue-star-rating";
 
 export default {
   components: { TheTabs, TheTab, StarRating },
-  props: ["id", "category"],
+  props: {
+    id: {
+      type: String,
+      required: false,
+    },
+    category: {
+      type: String,
+      required: true,
+    },
+  },
   data() {
     return {
-      //videoDetail: null,
-      isFetched: false,
       noImg:
         "https://icon-library.com/images/no-photo-available-icon/no-photo-available-icon-20.jpg",
       YouTubeUrl: "https://www.youtube.com/embed/",
       selected: "Cast",
+      image: "https://image.tmdb.org/t/p/w500/",
     };
   },
   computed: {
@@ -333,44 +317,24 @@ export default {
       return this.$store.getters["details/reviews"].slice(0, 2);
     },
     videos() {
-      return this.$store.getters["details/videos"];
+      return this.$store.getters["details/videos"].slice(0, 3);
     },
     images() {
       return this.$store.getters["details/images"];
     },
   },
   methods: {
-    // async loadVideos() {
-    //   await this.$store.dispatch("getDetails/getVideos", {
-    //     id: this.id,
-    //     category: this.category,
-    //   });
-    //   this.videoDetail = this.videos;
-    //   this.isFetched = true;
-    //   //console.log(this.reviewsDetail);
-    // },
-
     async loadData() {
       await this.$store.dispatch("details/loadAllData", {
         id: this.id,
         category: this.category,
       });
     },
-
-    next() {
-      const first = this.videos.shift();
-      this.videos = this.videos.concat(first);
-    },
-    previous() {
-      const last = this.videos.pop();
-      this.videos = [last].concat(this.videos);
-    },
     setSelected(tab) {
       this.selected = tab;
     },
   },
   created() {
-    // this.loadVideos();
     this.loadData();
   },
 };

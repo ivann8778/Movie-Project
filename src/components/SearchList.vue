@@ -54,17 +54,21 @@ export default {
   },
   methods: {
     async loadSearch(page = this.currentPage) {
-      const response = await fetch(
-        `https://api.themoviedb.org/3/search/multi?api_key=7074bb722049de6c4c14dd7d06db2407&language=en-US&query=${this.input}&page=${page}`
-      );
-      if (!response.ok) throw Error;
-      const resData = await response.json();
-      this.searchData = resData;
-      //console.log(resData.results);
+      try {
+        const response = await fetch(
+          `https://api.themoviedb.org/3/search/multi?api_key=7074bb722049de6c4c14dd7d06db2407&language=en-US&query=${this.input}&page=${page}`
+        );
+        if (!response.ok) throw Error;
+        const resData = await response.json();
+        this.searchData = resData;
+        //console.log(resData.results);
+      } catch (error) {
+        console.log(error);
+      }
     },
     onPageChange(page) {
       this.currentPage = page;
-      //console.log($event, this.currentPage);
+      //console.log( this.currentPage);
       this.loadSearch(this.currentPage);
     },
   },

@@ -12,7 +12,7 @@
           <input
             class="form-control mr-sm-2"
             type="search"
-            placeholder="Search for a movie/serial ..."
+            placeholder="Search for a movie/series ..."
             aria-label="Search"
             v-model="input"
           />

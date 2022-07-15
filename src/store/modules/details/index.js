@@ -6,7 +6,7 @@ export default {
     similar: [],
     reviews: [],
     videos: [],
-    image: [],
+    images: [],
   },
 
   mutations: {
@@ -102,7 +102,7 @@ export default {
     async getImages(context, payload) {
       try {
         const response = await fetch(
-          `https://api.themoviedb.org/3/${payload.category}/${payload.id}/images?api_key=7074bb722049de6c4c14dd7d06db2407&language=en-US`
+          `https://api.themoviedb.org/3/${payload.category}/${payload.id}/images?api_key=7074bb722049de6c4c14dd7d06db2407`
         );
         if (!response.ok) throw Error;
         const resData = await response.json();
@@ -113,11 +113,11 @@ export default {
         }
         context.commit('SET_DATA', {
           key: 'images',
-          data: resData.posters,
+          data: resData,
         });
-        console.log(resData.posters);
+        console.log('images', resData);
       } catch (error) {
-        //console.log(error);
+        console.log(error);
       }
     },
     async getVideos(context, payload) {

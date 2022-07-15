@@ -12,14 +12,14 @@
       </button>
     </li>
 
-    <li class="pagination-item" v-for="page in pages" :key="page.name">
+    <li class="pagination-item" v-for="page in pages" :key="page.number">
       <button
         type="button"
-        @click="onClickPage(page.name)"
+        @click="onClickPage(page.number)"
         :disabled="page.isDisabled"
-        :class="{ active: isPageActive(page.name) }"
+        :class="{ active: isPageActive(page.number) }"
       >
-        {{ page.name }}
+        {{ page.number }}
       </button>
     </li>
 
@@ -43,7 +43,7 @@ export default {
     visibleButtons: {
       type: Number,
       required: false,
-      default: 5,
+      default: 4,
     },
     totalPages: {
       type: Number,
@@ -70,19 +70,18 @@ export default {
       }
 
       // inbetween
-      return this.currentPage - 1;
+      return this.currentPage - 2;
     },
     pages() {
       const range = [];
 
       for (
         let i = this.startPage;
-        i <=
-        Math.min(this.startPage + this.visibleButtons - 1, this.totalPages);
+        i <= Math.min(this.startPage + this.visibleButtons, this.totalPages);
         i++
       ) {
         range.push({
-          name: i,
+          number: i,
           isDisabled: i === this.currentPage,
         });
       }

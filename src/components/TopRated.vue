@@ -9,9 +9,9 @@
       <i class="arrow right"></i>
     </button>
   </div>
-  <div class="carousel-view">
+  <div v-if="getGetters && getGetters.length > 0" class="carousel-view">
     <transition-group class="carousel" tag="div">
-      <div v-for="data in arrayWithData" class="slide" :key="data.id">
+      <div v-for="data in getGetters" class="slide" :key="data.id">
         <div class="container">
           <router-link
             :to="{
@@ -41,8 +41,6 @@ export default {
   },
   data() {
     return {
-      arrayWithData: [],
-      isFetched: false,
       page: 1,
       startPage: 1,
       image: "https://image.tmdb.org/t/p/w500/",
@@ -62,14 +60,12 @@ export default {
     },
   },
   methods: {
-    async loadData(page = this.page) {
+    async loadData() {
       const action =
         this.category === "movies" ? "movies/getMovies" : "serials/getSerials";
       await this.$store.dispatch(action, {
-        page: page,
+        page: this.page,
       });
-      this.arrayWithData = this.getGetters;
-      this.isFetched = true;
     },
     next() {
       if (this.page > 7) {

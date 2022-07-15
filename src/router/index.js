@@ -23,7 +23,7 @@ const routes = [
     props: true,
   },
   {
-    path: '/search/:input/',
+    path: '/search?:input',
     name: 'Search',
     component: SearchList,
     props: true,
